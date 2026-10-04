@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h> 
+#include <stdlib.h> 
 #include <string.h>
 #include <readline/history.h>
 #include <readline/readline.h>
@@ -13,61 +13,66 @@
 
 int main(void)
 {
+    // Display a welcome banner when the shell starts
     printf("=====================================\n");
     printf("      Shellforge \n");
     printf(" A Unix Style Shell written in C\n");
     printf("=====================================\n");
-
-    token_list_t tokens;
-    pipeline_t pipeline;
-
-    char *line;
+ using_history();
+ token_list_t tokens;
+ pipeline_t pipeline;
+ 
+ char *line;
 
     while (1)
     {
         line = readline("shellforge$ ");
-
         if (line == NULL)
         {
             printf("\nGoodbye!\n");
             break;
         }
-
         if (strlen(line) == 0)
         {
             free(line);
             continue;
         }
 
-        if (strcmp(line, "history") == 0)
-        {
-            print_history();
-            free(line);
-            continue;
-        }
+       if (strcmp(line, "history") == 0)
+       {
+          print_history();
+          free(line);
+           continue;
+       }
+// milestone 1 - enabling history
 
         add_history(line);
 
-        lexer(line, &tokens);
+// milestone 2.1 - tokenization and lexer
 
-        if (parser(&tokens, &pipeline))
-        {
-            expand_variables(&pipeline);
-        }
+	lexer(line, &tokens);
 
-        for (int i = 0; i < pipeline.command_count; i++)
-        {
-            int result = execute_command(&pipeline.commands[i]);
+        // token_print(&tokens);
 
-            if (result == 1)
-            {
+// milestone 2.2 - expansion of environment variables and parser
+
+	if(parser(&tokens, &pipeline))
+	{
+		expand_variables(&pipeline);
+    	//	pipeline_print(&pipeline);
+	}
+
+
+	if (pipeline.command_count == 1 &&  pipeline.commands[0].argc > 0 && strcmp(pipeline.commands[0].argv[0],"exit") == 0)
+         {
                 free(line);
-                return 0;
+                break;
             }
-        }
 
-        free(line);
+        execute_pipeline(&pipeline);
+
+       free(line);
+
     }
-
     return 0;
 }
