@@ -1,4 +1,4 @@
-	#include <stdio.h> 
+#include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h>
 #include <readline/history.h>
@@ -10,6 +10,7 @@
 #include "expand.h"
 #include "builtin.h"
 #include "executor.h"
+#include "jobs.h"
 
 int main(void)
 {
@@ -23,9 +24,10 @@ int main(void)
        INSTALL BACKGROUND PROCESS HANDLER
        ============================================= */
 
+	jobs_init();
     setup_background_handler();
 
-
+ 
  using_history();
  token_list_t tokens;
  pipeline_t pipeline;
